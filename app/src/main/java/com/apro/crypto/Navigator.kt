@@ -3,6 +3,11 @@ package com.apro.crypto
 import android.app.Activity
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import androidx.fragment.app.commit
+import com.apro.crypto.calc.CalcFragment
+import com.apro.crypto.details.DetailsFragment
+import com.apro.crypto.loan.LoanFragment
+import com.apro.crypto.order.OrderFragment
 import com.apro.crypto.sort.ChooseSortBottomSheet
 import com.apro.crypto.sort.models.SortType
 
@@ -11,39 +16,50 @@ interface Navigator {
     fun onBackPressed()
     fun openOrder()
     fun openSortBottomSheet(sortType: SortType)
-    fun openCalc()
-    fun openLoanCalc()
+    fun openSimpleCalculator()
+    fun openLoanCalculator()
 }
 
 fun createNavigator(activity: MainActivity): Navigator =
     object : Navigator {
+        val fm = activity.supportFragmentManager
         override fun onBackPressed() {
-            if (activity.supportFragmentManager.backStackEntryCount > 0)
-                activity.supportFragmentManager.popBackStack()
+            if (fm.backStackEntryCount > 0)
+                fm.popBackStack()
             else
                 activity.finish()
         }
 
         override fun openDetails(bundle: Bundle) {
-            activity.navigateToDetails(bundle)
+            fm.commit {
+                replace(R.id.fragmentContainer, DetailsFragment().apply {
+                    arguments = bundle
+                }).addToBackStack("details")
+            }
         }
 
         override fun openOrder() {
-            activity.navigateToOrder()
+            fm.commit {
+                replace(R.id.fragmentContainer, OrderFragment()).addToBackStack("order")
+            }
         }
 
         override fun openSortBottomSheet(sortType: SortType) {
             ChooseSortBottomSheet().apply {
                 arguments = bundleOf(ChooseSortBottomSheet.SORT_RESULT_BUNDLE_KEY to sortType)
-            }.show(activity.supportFragmentManager, "SORT_BOTTOM_SHEEP")
+            }.show(fm, "SORT_BOTTOM_SHEEP")
         }
 
-        override fun openCalc() {
-            activity.navigateToCalc()
+        override fun openSimpleCalculator() {
+            fm.commit {
+                replace(R.id.fragmentContainer, CalcFragment()).addToBackStack("calc")
+            }
         }
 
-        override fun openLoanCalc() {
-            activity.navigateToLoanCalc()
+        override fun openLoanCalculator() {
+            fm.commit {
+                replace(R.id.fragmentContainer, LoanFragment()).addToBackStack("loan")
+            }
         }
     }
 

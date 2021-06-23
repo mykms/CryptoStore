@@ -58,10 +58,10 @@ fun ViewTraits.MainScreen(
                         DropdownMenu(
                             expanded = menuOpened,
                             onDismissRequest = { menuOpened = false }) {
-                            TextButton(onClick = { navigator.openCalc() }) {
+                            TextButton(onClick = { navigator.openSimpleCalculator() }) {
                                 Text(text = "Simple calculator")
                             }
-                            TextButton(onClick = { navigator.openLoanCalc() }) {
+                            TextButton(onClick = { navigator.openLoanCalculator() }) {
                                 Text(text = "Loan calculator")
                             }
                             TextButton(onClick = {
