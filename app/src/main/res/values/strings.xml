@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Crypto store</string>
+
+    <string name="order_review_items_title">Review order items</string>
+    <string name="order_sms_title">Confirm your order</string>
+    <string name="order_success">You did it!</string>
+</resources>
