@@ -1,13 +1,11 @@
 package com.apro.crypto.order.screens
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +33,6 @@ fun OrderSMSVerificationScreen(
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        AnimatedVisibility(visible = state.isBusy) {
-            CircularProgressIndicator()
-        }
         TextField(
             value = state.smsCode,
             onValueChange = {
@@ -45,19 +40,33 @@ fun OrderSMSVerificationScreen(
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             enabled = state.isBusy.not(),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-        )
-        if (state.canResendSms.not() && state.isBusy.not()) {
-            Text(text = "Sms can be resent in ${state.secondsToResend} seconds")
-        } else {
-            AnimatedVisibility(visible = state.isBusy.not()) {
-                Button(onClick = {
-                    viewModel(OrderAction.Buy())
-                }, modifier = Modifier.padding(16.dp)) {
-                    Text("Send SMS code")
+            modifier = Modifier.focusRequester(focusRequester),
+            singleLine = true,
+            maxLines = 1,
+            placeholder = {
+                Text(text = "Enter verification code")
+            },
+            trailingIcon = {
+                when {
+                    state.isBusy -> CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp)
+                    )
+                    state.canResendSms.not() ->
+                        Text(text = "${state.secondsToResend} s")
+                    else ->
+                        IconButton(onClick = {
+                            viewModel(OrderAction.Buy())
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
+
                 }
             }
-        }
+        )
+
     }
 }

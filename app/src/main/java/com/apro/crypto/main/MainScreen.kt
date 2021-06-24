@@ -12,10 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,10 +47,10 @@ fun ViewTraits.MainScreen(
                     modifier = Modifier.padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box() {
-                        Image(
+                    Box {
+                        Icon(
                             imageVector = Icons.Default.List,
-                            colorFilter = ColorFilter.tint(color = Color.White),
+                            tint = Color.White,
                             contentDescription = null,
                             modifier = Modifier.clickable {
                                 menuOpened = true
@@ -72,10 +72,12 @@ fun ViewTraits.MainScreen(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .align(CenterVertically)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     AnimatedVisibility(visible = state.cartSum > 0) {

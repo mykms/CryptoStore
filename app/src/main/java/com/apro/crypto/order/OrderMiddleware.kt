@@ -47,6 +47,7 @@ class OrderMiddleware(
                     } catch (error: Throwable) {
                         emit(OrderEffect.BusyStateChange(false))
                         emit(OrderEffect.ResetSMSText)
+                        delay(500) // crash when requesting focus
                         sendEvent(ShowToast(error.message ?: ""))
                         sendEvent(RequestFocus)
                     }
@@ -68,6 +69,6 @@ class OrderMiddleware(
         }
 
     companion object {
-        private const val SECONDS = 15
+        private const val SECONDS = 10
     }
 }

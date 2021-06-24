@@ -47,7 +47,7 @@ class OrderFragment : Fragment(), AndroidScopeComponent {
                     }
                     is GoBackEvent -> traits.navigator.onBackPressed()
                     is ShowToast -> showToast(event.text)
-                    is RequestFocus -> view?.post { focusRequester.requestFocus() }
+                    is RequestFocus -> focusRequester.requestFocus()
                     is KeyboardClose -> {
                         val input = requireContext().getSystemService<InputMethodManager>()
                         input?.hideSoftInputFromWindow(requireView().windowToken, 0)
