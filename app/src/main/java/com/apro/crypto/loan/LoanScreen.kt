@@ -2,10 +2,9 @@ package com.apro.crypto.loan
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -94,13 +93,22 @@ fun ViewTraits.LoanScreen(viewModel: LoanViewModel) {
                     converter = { "${toInt()}%" }
                 )
                 AnimatedVisibility(visible = state.percentOfMax > 0.8 && state.termOfMonths == 12) {
+                    val infiniteTransition = rememberInfiniteTransition()
+                    val specialTextColor by infiniteTransition.animateColor(
+                        initialValue = Color.Red,
+                        targetValue = Color.Green,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1000),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "!!!Special deal!!!",
-                            color = Color.Red,
+                            color = specialTextColor,
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp,
                             modifier = Modifier

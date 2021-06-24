@@ -15,7 +15,7 @@ class LoanInteractor {
     fun getMaxSum(): Double = MAX_AMOUNT
 
     fun getMonthlyPayment(amount: Double, termOfMonths: Int): Double =
-        amount * (1 + getRate(amount, termOfMonths) / 100) / termOfMonths
+        amount * (1 + getRate(amount, termOfMonths).toDouble() / 100) / termOfMonths
 
     companion object {
         private const val MIN_AMOUNT = 1000.0

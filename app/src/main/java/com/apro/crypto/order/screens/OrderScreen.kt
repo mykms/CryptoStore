@@ -1,5 +1,6 @@
 package com.apro.crypto.order.screens
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -45,17 +46,19 @@ fun OrderScreen(viewModel: OrderViewModel, focusRequester: FocusRequester) {
                     }
                 })
         }) {
-        when (state.screen) {
-            OrderStateScreen.REVIEW_ITEMS -> OrderReviewItemsScreen(
-                state = state,
-                viewModel = viewModel
-            )
-            OrderStateScreen.SMS_VERIFICATION -> OrderSMSVerificationScreen(
-                state = state,
-                viewModel = viewModel,
-                focusRequester = focusRequester
-            )
-            OrderStateScreen.SUCCESS -> OrderSuccessScreen(state, viewModel)
+        Crossfade(targetState = state.screen) {
+            when (it) {
+                OrderStateScreen.REVIEW_ITEMS -> OrderReviewItemsScreen(
+                    state = state,
+                    viewModel = viewModel
+                )
+                OrderStateScreen.SMS_VERIFICATION -> OrderSMSVerificationScreen(
+                    state = state,
+                    viewModel = viewModel,
+                    focusRequester = focusRequester
+                )
+                OrderStateScreen.SUCCESS -> OrderSuccessScreen(state, viewModel)
+            }
         }
     }
 
