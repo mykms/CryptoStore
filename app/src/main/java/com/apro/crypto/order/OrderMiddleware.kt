@@ -28,10 +28,10 @@ class OrderMiddleware(
             }
             is OrderAction.Buy -> flow {
                 if (action.isFinished) return@flow
-                emit(OrderEffect.PlaceOrder(SECONDS))
-                repeat(SECONDS) {
+                emit(OrderEffect.PlaceOrder(MAX_SECONDS))
+                repeat(MAX_SECONDS) {
                     delay(1000)
-                    emit(OrderEffect.SecondsChanged(SECONDS - it.inc()))
+                    emit(OrderEffect.SecondsChanged(MAX_SECONDS - it.inc()))
                 }
             }
             is OrderAction.SmsCodeEntered -> flow {
@@ -69,6 +69,6 @@ class OrderMiddleware(
         }
 
     companion object {
-        private const val SECONDS = 10
+        const val MAX_SECONDS = 10
     }
 }

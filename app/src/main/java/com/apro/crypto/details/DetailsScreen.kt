@@ -1,34 +1,38 @@
 package com.apro.crypto.details
 
 import androidx.activity.OnBackPressedDispatcher
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apro.crypto.asMoney
 import com.apro.crypto.details.models.DetailsAction
-import com.apro.crypto.details.models.calcText
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import kotlin.math.roundToInt
-
 
 @Composable
 fun DetailsScreen(viewModel: DetailsViewModel, backPressedDispatcher: OnBackPressedDispatcher) {
@@ -61,11 +65,33 @@ fun DetailsScreen(viewModel: DetailsViewModel, backPressedDispatcher: OnBackPres
 
         }
     ) {
+        var offsetValue by remember { mutableStateOf(0f) }
+        val offsetY by animateFloatAsState(targetValue = offsetValue)
         Column(
             modifier = Modifier
                 .fillMaxHeight()
+                .fillMaxWidth()
+                .offset { IntOffset(0, offsetY.roundToInt()) }
+                .draggable(state = rememberDraggableState {
+                    offsetValue += it
+                }, orientation = Orientation.Vertical,
+                    onDragStopped = {
+                        offsetValue = 0f
+                    })
+                .graphicsLayer {
+                    scaleX = 0.7f
+                    scaleY = 0.7f
+                    rotationZ = -10f
+                }
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Yellow, Color.Transparent),
+                        startY = Float.POSITIVE_INFINITY,
+                        endY = 0f
+                    )
+                )
+                .shadow(1.dp)
                 .padding(16.dp)
-                .fillMaxWidth(),
         ) {
             if (coin != null) {
                 Image(
@@ -93,7 +119,7 @@ fun DetailsScreen(viewModel: DetailsViewModel, backPressedDispatcher: OnBackPres
                     viewModel(DetailsAction.AmountChanged(coin, value))
                 }, modifier = Modifier.fillMaxWidth())
                 Text(
-                    text = "${state.amount.roundToInt()} x ${coin.price.asMoney()} = ${state.calcText}",
+                    text = "${state.amount.roundToInt()} x ${coin.price.asMoney()} = ${state.total.asMoney()}",
                     modifier = Modifier.placeholder(
                         visible = state.calculating,
                         highlight = PlaceholderHighlight.shimmer()

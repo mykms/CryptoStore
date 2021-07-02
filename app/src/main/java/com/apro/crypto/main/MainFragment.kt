@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarResult
+import androidx.compose.material.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.apro.crypto.Navigator
@@ -31,13 +30,14 @@ class MainFragment : Fragment(), AndroidScopeComponent {
         requireActivity().createNavigator()
     }
 
+    private val scaffoldState = ScaffoldState(DrawerState(DrawerValue.Closed), SnackbarHostState())
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         handleSortResult()
-        var scaffoldState: ScaffoldState? = null
         return buildView(
             viewModel = viewModel,
             onEvent = { event ->
@@ -50,7 +50,7 @@ class MainFragment : Fragment(), AndroidScopeComponent {
                         navigator.openSortBottomSheet(state.sortType)
                     }
                     is ShowSnackbar -> {
-                        scaffoldState?.apply {
+                        scaffoldState.apply {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             launch {
                                 val result = snackbarHostState.showSnackbar(event.message, "Undo")
@@ -63,9 +63,7 @@ class MainFragment : Fragment(), AndroidScopeComponent {
                 }
             },
             content = {
-                MainScreen(viewModel, navigator = navigator) {
-                    scaffoldState = it
-                }
+                MainScreen(viewModel, navigator = navigator, scaffoldState = scaffoldState)
             }
         )
     }

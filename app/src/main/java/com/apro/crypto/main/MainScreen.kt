@@ -37,16 +37,13 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 fun MainScreen(
     viewModel: MainViewModel,
     navigator: Navigator,
-    setupScaffold: @Composable (ScaffoldState) -> Unit,
+    scaffoldState: ScaffoldState
 ) {
     BackHandler {
         viewModel.submitAction(MainAction.GoBackPressed)
     }
     val state by viewModel.state.collectAsState()
     var menuOpened by remember { mutableStateOf(false) }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState)
-    setupScaffold(scaffoldState)
     Scaffold(
         topBar = {
             TopAppBar {
