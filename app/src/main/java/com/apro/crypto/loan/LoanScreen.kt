@@ -1,5 +1,6 @@
 package com.apro.crypto.loan
 
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColor
@@ -31,11 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apro.crypto.R
 import com.apro.crypto.asMoney
-import com.apro.crypto.mvi.ViewTraits
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ViewTraits.LoanScreen(viewModel: LoanViewModel) {
+fun LoanScreen(viewModel: LoanViewModel, backPressedDispatcher: OnBackPressedDispatcher) {
     val state by viewModel.state.collectAsState()
     val backgroundColor by animateColorAsState(
         targetValue = if (state.isError)
@@ -47,7 +47,7 @@ fun ViewTraits.LoanScreen(viewModel: LoanViewModel) {
         topBar = {
             TopAppBar {
                 IconButton(onClick = {
-                    navigator.onBackPressed()
+                    backPressedDispatcher.onBackPressed()
                 }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }

@@ -29,7 +29,9 @@ class DetailsFragment : Fragment(), AndroidScopeComponent {
     ): View {
         val args: DetailsArgs = getArgs()
         val viewModel = getViewModel<DetailsViewModel> { parametersOf(args) }
-        return buildView(viewModel, content = { DetailsScreen(it) })
+        return buildView(
+            viewModel,
+            content = { DetailsScreen(viewModel, requireActivity().onBackPressedDispatcher) })
     }
 
 }

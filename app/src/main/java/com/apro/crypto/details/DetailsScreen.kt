@@ -1,5 +1,6 @@
 package com.apro.crypto.details
 
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,13 +23,15 @@ import androidx.compose.ui.unit.sp
 import com.apro.crypto.asMoney
 import com.apro.crypto.details.models.DetailsAction
 import com.apro.crypto.details.models.calcText
-import com.apro.crypto.mvi.ViewTraits
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import kotlin.math.roundToInt
 
 
 @Composable
-fun ViewTraits.DetailsScreen(viewModel: DetailsViewModel) {
+fun DetailsScreen(viewModel: DetailsViewModel, backPressedDispatcher: OnBackPressedDispatcher) {
     val state by viewModel.state.collectAsState()
     val coin = state.coin
     Scaffold(
@@ -36,7 +39,7 @@ fun ViewTraits.DetailsScreen(viewModel: DetailsViewModel) {
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = {
-                        navigator.onBackPressed()
+                        backPressedDispatcher.onBackPressed()
                     }) {
                         Image(
                             imageVector = Icons.Default.ArrowBack,
@@ -50,7 +53,7 @@ fun ViewTraits.DetailsScreen(viewModel: DetailsViewModel) {
                 },
                 actions = {
                     IconButton(onClick = {
-                        navigator.onBackPressed()
+                        backPressedDispatcher.onBackPressed()
                     }) {
                         Icon(Icons.Filled.Close, contentDescription = "")
                     }
@@ -89,7 +92,13 @@ fun ViewTraits.DetailsScreen(viewModel: DetailsViewModel) {
                 Slider(value = state.amount, valueRange = 1f..100f, onValueChange = { value ->
                     viewModel(DetailsAction.AmountChanged(coin, value))
                 }, modifier = Modifier.fillMaxWidth())
-                Text(text = "${state.amount.roundToInt()} x ${coin.price.asMoney()} = ${state.calcText}")
+                Text(
+                    text = "${state.amount.roundToInt()} x ${coin.price.asMoney()} = ${state.calcText}",
+                    modifier = Modifier.placeholder(
+                        visible = state.calculating,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                )
                 Text(
                     text = "Rank: ${coin.rank}",
                     textAlign = TextAlign.End,

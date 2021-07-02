@@ -8,6 +8,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import com.apro.crypto.Navigator
+import com.apro.crypto.createNavigator
 import com.apro.crypto.main.models.GoBackEvent
 import com.apro.crypto.main.models.KeyboardClose
 import com.apro.crypto.main.models.RequestFocus
@@ -28,6 +30,10 @@ class OrderFragment : Fragment(), AndroidScopeComponent {
     private val viewModel: OrderViewModel by viewModel()
     private val focusRequester = FocusRequester()
 
+    private val navigator: Navigator by lazy {
+        requireActivity().createNavigator()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,17 +41,12 @@ class OrderFragment : Fragment(), AndroidScopeComponent {
     ): View =
         buildView(
             viewModel = viewModel,
-            onLaunch = {
-                it.handleOnBackPressed {
-                    viewModel(OrderAction.GoBackPressed(viewModel.state.value.screen))
-                }
-            },
-            onEvent = { traits, event ->
+            onEvent = { event ->
                 when (event) {
                     is OrderEvent.FinishPlacing -> {
                         viewModel(OrderAction.Buy(isFinished = true))
                     }
-                    is GoBackEvent -> traits.navigator.onBackPressed()
+                    is GoBackEvent -> navigator.onBackPressed()
                     is ShowToast -> showToast(event.text)
                     is RequestFocus -> focusRequester.requestFocus()
                     is KeyboardClose -> {
@@ -55,6 +56,6 @@ class OrderFragment : Fragment(), AndroidScopeComponent {
                 }
             }
         ) {
-            OrderScreen(viewModel = it, focusRequester)
+            OrderScreen(viewModel = viewModel, focusRequester)
         }
 }

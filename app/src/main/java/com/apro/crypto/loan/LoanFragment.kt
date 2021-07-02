@@ -24,7 +24,7 @@ class LoanFragment : Fragment(), AndroidScopeComponent {
     ): View = buildView(
         viewModel = viewModel,
     ) {
-        LoanScreen(viewModel = viewModel)
+        LoanScreen(viewModel = viewModel, requireActivity().onBackPressedDispatcher)
     }
 
 }

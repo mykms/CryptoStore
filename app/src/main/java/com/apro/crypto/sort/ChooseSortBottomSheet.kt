@@ -42,7 +42,7 @@ class ChooseSortBottomSheet : BottomSheetDialogFragment(), AndroidScopeComponent
         savedInstanceState: Bundle?
     ): View = buildView(
         viewModel = viewModel,
-        onEvent = { _, event ->
+        onEvent = { event ->
             when (event) {
                 is OpenSortResult -> {
                     setFragmentResult(
@@ -55,7 +55,7 @@ class ChooseSortBottomSheet : BottomSheetDialogFragment(), AndroidScopeComponent
             }
         }
     ) {
-        SortScreen(viewModel = it)
+        SortScreen(viewModel = viewModel)
     }
 
     companion object {

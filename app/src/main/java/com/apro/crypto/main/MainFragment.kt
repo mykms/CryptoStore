@@ -8,6 +8,8 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import com.apro.crypto.Navigator
+import com.apro.crypto.createNavigator
 import com.apro.crypto.main.models.*
 import com.apro.crypto.mvi.buildView
 import com.apro.crypto.showToast
@@ -25,6 +27,10 @@ class MainFragment : Fragment(), AndroidScopeComponent {
 
     private val viewModel: MainViewModel by viewModel()
 
+    private val navigator: Navigator by lazy {
+        requireActivity().createNavigator()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,19 +40,14 @@ class MainFragment : Fragment(), AndroidScopeComponent {
         var scaffoldState: ScaffoldState? = null
         return buildView(
             viewModel = viewModel,
-            onLaunch = { traits ->
-                traits.handleOnBackPressed {
-                    viewModel.submitAction(MainAction.GoBackPressed)
-                }
-            },
-            onEvent = { traits, event ->
+            onEvent = { event ->
                 when (event) {
                     is ShowToast -> showToast(event.text)
-                    is OpenDetails -> traits.navigator.openDetails(event.bundle)
-                    is GoBackEvent -> traits.navigator.onBackPressed()
+                    is OpenDetails -> navigator.openDetails(event.bundle)
+                    is GoBackEvent -> navigator.onBackPressed()
                     is OpenSortEvent -> {
                         val state = viewModel.state.value
-                        traits.navigator.openSortBottomSheet(state.sortType)
+                        navigator.openSortBottomSheet(state.sortType)
                     }
                     is ShowSnackbar -> {
                         scaffoldState?.apply {
@@ -61,8 +62,8 @@ class MainFragment : Fragment(), AndroidScopeComponent {
                     }
                 }
             },
-            content = { traits ->
-                MainScreen(traits) {
+            content = {
+                MainScreen(viewModel, navigator = navigator) {
                     scaffoldState = it
                 }
             }

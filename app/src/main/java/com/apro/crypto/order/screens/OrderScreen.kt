@@ -1,5 +1,6 @@
 package com.apro.crypto.order.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.material.*
@@ -21,6 +22,9 @@ import com.apro.crypto.order.models.titleId
 @Composable
 fun OrderScreen(viewModel: OrderViewModel, focusRequester: FocusRequester) {
     val state by viewModel.state.collectAsState()
+    BackHandler {
+        viewModel(OrderAction.GoBackPressed(viewModel.state.value.screen))
+    }
     Scaffold(
         topBar = {
             TopAppBar(

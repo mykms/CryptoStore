@@ -1,5 +1,6 @@
 package com.apro.crypto.calc
 
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,17 +16,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.apro.crypto.mvi.ViewTraits
 
 @Composable
-fun ViewTraits.CalcScreen(viewModel: CalcViewModel) {
+fun CalcScreen(viewModel: CalcViewModel, backPressedDispatcher: OnBackPressedDispatcher) {
     val state by viewModel.state.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar {
                 Text(text = "Calculator", modifier = Modifier.padding(start = 8.dp))
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = { navigator.onBackPressed() }) {
+                IconButton(onClick = { backPressedDispatcher.onBackPressed() }) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = null)
                 }
             }

@@ -23,13 +23,13 @@ class CalcFragment : Fragment(), AndroidScopeComponent {
         savedInstanceState: Bundle?
     ): View = buildView(
         viewModel = viewModel,
-        onEvent = { _, event ->
+        onEvent = { event ->
             when (event) {
                 is CalcEvent.ErrorEvent -> showToast(event.message)
             }
         }
     ) {
-        CalcScreen(viewModel = viewModel)
+        CalcScreen(viewModel = viewModel, requireActivity().onBackPressedDispatcher)
     }
 
 }

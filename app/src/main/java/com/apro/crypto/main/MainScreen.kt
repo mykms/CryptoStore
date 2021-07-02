@@ -1,7 +1,9 @@
 package com.apro.crypto.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,26 +17,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.apro.crypto.Navigator
 import com.apro.crypto.R
 import com.apro.crypto.asMoney
 import com.apro.crypto.details.QuestionDialog
 import com.apro.crypto.main.models.MainAction
 import com.apro.crypto.main.models.MainListState
-import com.apro.crypto.mvi.ViewTraits
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ViewTraits.MainScreen(
+fun MainScreen(
     viewModel: MainViewModel,
-    setupScaffold: @Composable (ScaffoldState) -> Unit
+    navigator: Navigator,
+    setupScaffold: @Composable (ScaffoldState) -> Unit,
 ) {
+    BackHandler {
+        viewModel.submitAction(MainAction.GoBackPressed)
+    }
     val state by viewModel.state.collectAsState()
     var menuOpened by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -45,7 +52,7 @@ fun ViewTraits.MainScreen(
             TopAppBar {
                 Row(
                     modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = CenterVertically
                 ) {
                     Box {
                         Icon(
@@ -113,7 +120,7 @@ fun ViewTraits.MainScreen(
                     .padding(12.dp)
                     .fillMaxWidth(),
                 trailingIcon = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = CenterVertically) {
                         if (state.isLoading) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp))
                         }
@@ -125,23 +132,19 @@ fun ViewTraits.MainScreen(
                                 })
                         }
                     }
-                }
+                },
+                singleLine = true,
+                maxLines = 0
             )
             when (val listState = state.listState) {
                 is MainListState.Failure -> {
-                    Button(onClick = {
+                    FailureButton {
                         viewModel.submitAction(
                             MainAction.SearchRequest(
                                 state.searchText,
                                 state.sortType
                             )
                         )
-                    }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        Row {
-                            Image(imageVector = Icons.Default.Face, contentDescription = "")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Failed! Try again?")
-                        }
                     }
                 }
                 is MainListState.Items -> {
@@ -172,7 +175,6 @@ private fun ItemsList(
     list: MainListState.Items,
     viewModel: MainViewModel
 ) {
-
     LazyColumn {
         items(list.value) {
             Column {
@@ -183,7 +185,7 @@ private fun ItemsList(
                             viewModel.submitAction(MainAction.ItemClicked(it.model))
                         }
                         .padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = CenterVertically
                 ) {
                     val coin = it.model
                     Box(
@@ -244,5 +246,33 @@ private fun ItemsList(
                 Divider()
             }
         }
+    }
+}
+
+@Composable
+fun ColumnScope.FailureButton(onClick: () -> Unit) {
+    val errorButtonTransaction = rememberInfiniteTransition()
+    val scale by errorButtonTransaction.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.5f,
+        animationSpec = infiniteRepeatable(
+            tween(1000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(16.dp)
+            .scale(scale),
+        colors = ButtonDefaults.outlinedButtonColors()
+    ) {
+        Icon(
+            imageVector = Icons.Default.Refresh, contentDescription = "",
+            tint = MaterialTheme.colors.error
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text("Failed! Try again?")
     }
 }

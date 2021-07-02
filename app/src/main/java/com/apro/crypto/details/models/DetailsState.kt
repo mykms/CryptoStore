@@ -13,4 +13,6 @@ data class DetailsState(
 )
 
 val DetailsState.calcText: String
-    get() = if (calculating) "calculating..." else total.asMoney()
+    get() = if (calculating) calcTextConstant else total.asMoney()
+
+private const val calcTextConstant = "calculating..."
